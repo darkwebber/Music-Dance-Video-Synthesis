@@ -11,7 +11,7 @@ import json
 class DanceDataset(torch.utils.data.Dataset):
     def __init__(self, opt, train=True):
         file_location=opt.data
-        pose_dict=read_from_json(file_location)
+        pose_dict=read_from_json("/content/drive/MyDrive/lisa_revised_pose_pairs.json")
         
         length=0
         keys=sorted(pose_dict.keys())
