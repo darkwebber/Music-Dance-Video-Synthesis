@@ -37,7 +37,7 @@ class GCNLoss(nn.Module):
         dict_path=opt.pretrain_GCN
         graph_args={"layout": 'openpose',"strategy": 'spatial'}
         self.gcn = Model(2,16,graph_args,edge_importance_weighting=True).cuda()
-        self.gcn.load_state_dict(torch.load(dict_path))
+        self.gcn.load_state_dict(torch.load("/content/Music-Dance-Video-Synthesis/pretrain_model/GCN.pth"))
         self.gcn.eval()
         self.criterion = nn.L1Loss()
         self.weights = [20.0 ,5.0 ,1.0 ,1.0 ,1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  #10 output      
