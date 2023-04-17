@@ -68,7 +68,7 @@ except OSError:
 Tensor = torch.cuda.FloatTensor
 generator = Generator(1)
 generator.eval()
-generator.load_state_dict(torch.load(file_path))
+generator.load_state_dict(torch.load("/content/drive/MyDrive/lisa_revised_pose_pairs.json"))
 generator.cuda()
 data=DanceDataset(args.data)
 dataloader = torch.utils.data.DataLoader(data,
