@@ -127,6 +127,12 @@ def train(generator,frame_discriminator,seq_discriminator,opt):
     VGGLoss = GCNLoss(opt)
     D_Feature = HCNLoss()
     index=0
+    epochs = []
+    avg_loss_1 = []
+    avg_loss_2 = []
+    avg_loss_3 = []
+    avg_loss_4 = []
+
     for epoch in range(opt.niter):
         batches_done=0
         total_loss1 = 0.0
@@ -206,6 +212,7 @@ def train(generator,frame_discriminator,seq_discriminator,opt):
         #  Log Progress
         # --------------
             batches_done+=1
+            
             index+=1
             batches_now = epoch * len(dataloader) + i
             total_loss1 += loss_G.item()
@@ -230,12 +237,53 @@ def train(generator,frame_discriminator,seq_discriminator,opt):
         total_loss2 /= batches_done
         total_loss3 /= batches_done
         total_loss4 /= batches_done
+        avg_loss_1.append(total_loss1)
+        avg_loss_2.append(total_loss2)
+        avg_loss_3.append(total_loss3)
+        avg_loss_4.append(total_loss4)
+        epochs.append(epoch)
         writer.add_scalar('epoch/gan_loss', total_loss1, epoch)
         writer.add_scalar('epoch/L1_loss', total_loss2, epoch)
         writer.add_scalar('epoch/frame_loss', total_loss3, epoch)
         writer.add_scalar('epoch/seq_loss', total_loss4, epoch)
+    plt.figure(1)
+    plt.plot(range(epochs[0]+1,epochs[-1]+2),avg_loss_1)
+    plt.xlabel("Epochs")
+    plt.ylabel("Adversial Loss")
+    plt.figure(2)
+    plt.plot(range(epochs[0]+1,epochs[-1]+2),avg_loss_2)
+    plt.xlabel("Epochs")
+    plt.ylabel("L1 Loss")
+    plt.figure(3)
+    plt.plot(range(epochs[0]+1,epochs[-1]+2),avg_loss_3)
+    plt.xlabel("Epochs")
+    plt.ylabel("Local Temporal Discriminator Loss")
+    plt.figure(4)
+    plt.plot(range(epochs[0]+1,epochs[-1]+2),avg_loss_4)
+    plt.xlabel("Epochs")
+    plt.ylabel("Global Content Discriminator Loss")
+    plt.show()
+    max_loss_1 = max(avg_loss_1)
+    max_loss_2 = max(avg_loss_2)
+    max_loss_3 = max(avg_loss_3)
+    max_loss_4 = max(avg_loss_4)
+    nrm_avg_loss_1 = list(map(lambda x: x/max_loss_1,avg_loss_1))
+    nrm_avg_loss_2 = list(map(lambda x: x/max_loss_2,avg_loss_2))
+    nrm_avg_loss_3 = list(map(lambda x: x/max_loss_3,avg_loss_3))
+    nrm_avg_loss_4 = list(map(lambda x: x/max_loss_4,avg_loss_4))
+    final_loss_metric = list(map(adder,nrm_avg_loss_1,nrm_avg_loss_2,nrm_avg_loss_3,nrm_avg_loss_4))
+    print(final_loss_metric.index(min(final_loss_metric))+1)
+    plt.figure(5)
+    plt.plot(range(epochs[0]+1,epochs[-1]+2),final_loss_metric)
+    plt.xlabel("Epochs")
+    plt.ylabel("Normalized Total Loss")
+
+    plt.show()
     writer.close()  
-    
+
+from operator import add    
+def adder(x,y,z,k):
+  return add(add(x,y),add(z,k))
 if __name__ == '__main__':
     parser = get_arguments()
     opt = parser.parse_args()
