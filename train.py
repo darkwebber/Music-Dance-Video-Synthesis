@@ -272,7 +272,7 @@ def train(generator,frame_discriminator,seq_discriminator,opt):
     nrm_avg_loss_3 = list(map(lambda x: x/max_loss_3,avg_loss_3))
     nrm_avg_loss_4 = list(map(lambda x: x/max_loss_4,avg_loss_4))
     final_loss_metric = list(map(adder,nrm_avg_loss_1,nrm_avg_loss_2,nrm_avg_loss_3,nrm_avg_loss_4))
-    print(index(min(final_loss_metric))+1)
+    print(final_loss_metric.index(min(final_loss_metric))+1)
     plt.figure(5)
     plt.plot(range(epochs[0]+1,epochs[-1]+2),final_loss_metric)
     plt.xlabel("Epochs")
